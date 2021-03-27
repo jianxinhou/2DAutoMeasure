@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.1" halcon_version="13.0.2">
+<procedure name="main">
+<interface/>
+<body>
+<c>****************************</c>
+<c>*准备工作</c>
+<c>****************************</c>
+<l>dev_close_window ()</l>
+<c>****************************</c>
+<c>*样式显示常量</c>
+<c>****************************</c>
+<c>* 模板框</c>
+<l>TEMP_RECT_COLOR := 'spring green'</l>
+<l>TARGET_RECT_LINEWIDTH := 2</l>
+<c>* 元素</c>
+<l>ELEMENT_COLOR := 'orange red' </l>
+<l>ELEMENT_LINEWIDTH := 2</l>
+<c>* 测量轮廓</c>
+<l>MEASURE_CONTOUR_COLOR := 'white'</l>
+<l>MEASURE_CONTOUR_LINEWIDTH := 1</l>
+<c>* 结果轮廓</c>
+<l>RESULT_CONTOUR_COLOR := 'gold'</l>
+<l>RESULT_CONTOUR_LINEWIDTH := 2</l>
+<c>* 拟合点</c>
+<l>FIT_POINT_COLOR := 'white'</l>
+<l>FIT_POINT_LINEWIDTH := 1</l>
+<c>* 结果信息显示</c>
+<l>OK_RESULT_CONTOUR_COLOR := 'green'</l>
+<l>NG_RESULT_CONTOUR_COLOR := 'red'</l>
+<c>****************************</c>
+<c>*读取halcon自带模板图片</c>
+<c>****************************</c>
+<l>read_image (TemplateImage, 'metal-parts/circle_plate_01')</l>
+<l>dev_open_window_fit_image (TemplateImage, 0, 0, -1, -1, WindowHandle)</l>
+<l>set_display_font (WindowHandle, 16, 'mono', 'true', 'false')</l>
+<l>dev_display(TemplateImage)</l>
+<c>*生成模板匹配的模板</c>
+<l>dev_set_line_width(TARGET_RECT_LINEWIDTH)</l>
+<l>dev_set_color(TEMP_RECT_COLOR)</l>
+<l>disp_message (WindowHandle, '以下为用于模板匹配的区域', 'image',0, 0, 'black', 'true')</l>
+<l>gen_rectangle1(ModelRectangle, 104.46, 112.993, 770.06, 1179.66)</l>
+<l>reduce_domain(TemplateImage, ModelRectangle, ModelImage)</l>
+<l>create_scaled_shape_model(ModelImage, 'auto', 0, rad(360), 'auto', 0.5, 1.5, 'auto', 'auto', 'use_polarity', 'auto', 'auto', ModelID)</l>
+<l>dev_set_draw ('margin')</l>
+<l>disp_rectangle1(WindowHandle,104.46, 112.993, 770.06, 1179.66)</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop ()</l>
+<c>****************************</c>
+<c>*生成Metrology Model</c>
+<c>****************************</c>
+<l>dev_set_line_width(ELEMENT_LINEWIDTH)</l>
+<l>dev_set_color(ELEMENT_COLOR)</l>
+<l>create_metrology_model(MetrologyHandle)</l>
+<l>get_image_size(TemplateImage,Width, Height)</l>
+<l>set_metrology_model_image_size (MetrologyHandle, Width, Height)</l>
+<c>****************************</c>
+<c>*绘制几何图形基准线</c>
+<c>****************************</c>
+<l>LineRowBegin := [147.127, 717.153,208.567]</l>
+<l>LineColumnBegin := [239.287, 210.283,147.127]</l>
+<l>LineRowEnd := [135.18, 706.013,671.073]</l>
+<l>LineColumnEnd := [1022.65, 1060.19,160.78]</l>
+<c>****************************</c>
+<c>*绘制三条线</c>
+<c>****************************</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>disp_line(WindowHandle, LineRowBegin[0], LineColumnBegin[0], LineRowEnd[0], LineColumnEnd[0])</l>
+<l>Line1 := [LineRowBegin[0], LineColumnBegin[0], LineRowEnd[0], LineColumnEnd[0]]</l>
+<l>disp_message (WindowHandle, '第一条线段', 'image',0, 0, 'black', 'true')</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<l>disp_line(WindowHandle, LineRowBegin[1], LineColumnBegin[1], LineRowEnd[1], LineColumnEnd[1])</l>
+<l>Line2 := [LineRowBegin[1], LineColumnBegin[1], LineRowEnd[1], LineColumnEnd[1]]</l>
+<l>disp_message (WindowHandle, '第二条线段', 'image',0, 0, 'black', 'true')</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<l>disp_line(WindowHandle, LineRowBegin[2], LineColumnBegin[2], LineRowEnd[2], LineColumnEnd[2])</l>
+<l>Line3 := [LineRowBegin[2], LineColumnBegin[2], LineRowEnd[2], LineColumnEnd[2]]</l>
+<l>disp_message (WindowHandle, '第三条线段', 'image',0, 0, 'black', 'true')</l>
+<l>add_metrology_object_generic (MetrologyHandle, 'line', [Line1,Line2,Line3], 20, 10, 1, 30, [], [], LineIndices)</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>****************************</c>
+<c>*绘制圆</c>
+<c>****************************</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>disp_message (WindowHandle, '圆', 'image',0, 0, 'black', 'true')</l>
+<l>CircleParam := [353.63,519.18,51.2]</l>
+<l>disp_circle(WindowHandle, CircleParam[0], CircleParam[1], CircleParam[2])</l>
+<l>add_metrology_object_generic (MetrologyHandle, 'circle', CircleParam, 10, 5, 1, 30, [], [], CircleIndice)</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>****************************</c>
+<c>*一个圆弧</c>
+<c>****************************</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<c></c>
+<l>Rows :=[539.66,522.944,534.106]</l>
+<l>Cols :=[715.447,735.171,758.675]</l>
+<l>gen_contour_polygon_xld (TempContour, Rows, Cols)</l>
+<c>* 三点生成圆弧</c>
+<l>fit_circle_contour_xld (TempContour, 'geotukey', -1, 0, 0, 3, 2, ArcRow, ArcColumn, ArcRadius, StartPhi, EndPhi, PointOrder)</l>
+<c>* 校正起始角度</c>
+<l>if(StartPhi &gt; EndPhi)</l>
+<l>    TempPhi := EndPhi</l>
+<l>    EndPhi := StartPhi</l>
+<l>    StartPhi := TempPhi</l>
+<l>endif</l>
+<l>gen_circle_contour_xld (TempCircleContour, ArcRow, ArcColumn, ArcRadius, StartPhi, EndPhi,'positive' , 1)</l>
+<l>distance_pc (TempCircleContour, Rows[1], Cols[1], DistanceMin, DistanceMax)</l>
+<c>* 判断拟合圆弧的方向</c>
+<l>if (DistanceMin&gt;1)</l>
+<l>    PointOrder := 'negative'</l>
+<l>else</l>
+<l>    PointOrder := 'positive'</l>
+<l>endif</l>
+<l>gen_circle_contour_xld (ArcContour, ArcRow, ArcColumn, ArcRadius, StartPhi, EndPhi, PointOrder, 1)</l>
+<l>add_metrology_object_circle_measure(MetrologyHandle,ArcRow, ArcColumn, ArcRadius, 20, 5, 1, 30, ['start_phi','end_phi'], [StartPhi,EndPhi], ArcIndice)</l>
+<l>set_metrology_object_param(MetrologyHandle, ArcIndice, 'measure_transition', 'positive')</l>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>disp_message (WindowHandle, '圆弧', 'image',0, 0, 'black', 'true')</l>
+<l>dev_display(ArcContour)</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>****************************</c>
+<c>*拟合图形</c>
+<c>****************************</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>apply_metrology_model(ModelImage, MetrologyHandle)</l>
+<c>* 显示拟合区域</c>
+<l>dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(MEASURE_CONTOUR_COLOR)</l>
+<l>get_metrology_object_measures(LineContoursMeasures, MetrologyHandle, LineIndices, 'all', LinesRow, LinesColumn)</l>
+<l>get_metrology_object_measures(CircleContourMeasures, MetrologyHandle, CircleIndice, 'all', CricleRow, CircleColumn)</l>
+<l>get_metrology_object_measures(ArcContourMeasures, MetrologyHandle, ArcIndice, 'all', ArcRow, ArcColumn)</l>
+<c>* 显示检测到的边缘</c>
+<l>dev_set_line_width(FIT_POINT_LINEWIDTH)</l>
+<l>dev_set_color(FIT_POINT_COLOR)</l>
+<l>gen_cross_contour_xld(LinesContoursCross, LinesRow, LinesColumn, 12, 0.785398)</l>
+<l>gen_cross_contour_xld(CircleContoursCross, CricleRow, CircleColumn, 12, 0.785398)</l>
+<l>gen_cross_contour_xld(ArcContoursCross, ArcRow, ArcColumn, 12, 0.785398)</l>
+<c>* 显示拟合结果</c>
+<l>dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>get_metrology_object_result_contour(Line1ResultContour, MetrologyHandle, LineIndices[0], 'all', 1.5)</l>
+<l>get_metrology_object_result_contour(Line2ResultContour, MetrologyHandle, LineIndices[1], 'all', 1.5)</l>
+<l>get_metrology_object_result_contour(Line3ResultContour, MetrologyHandle, LineIndices[2], 'all', 1.5)</l>
+<l>get_metrology_object_result_contour(CircleResultContour, MetrologyHandle, CircleIndice, 'all', 1.5)</l>
+<l>get_metrology_object_result_contour(ArcResultContour, MetrologyHandle, ArcIndice[0], 'all', 1.5)</l>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>disp_message (WindowHandle, '拟合元素', 'image',0, 0, 'black', 'true')</l>
+<l>dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(MEASURE_CONTOUR_COLOR)</l>
+<l>dev_display(CircleContourMeasures)</l>
+<l>dev_display(ArcContourMeasures)</l>
+<l>dev_display(LineContoursMeasures)</l>
+<l>dev_set_line_width(FIT_POINT_LINEWIDTH)</l>
+<l>dev_set_color(FIT_POINT_COLOR)</l>
+<l>dev_display(LinesContoursCross)</l>
+<l>dev_display(CircleContoursCross)</l>
+<l>dev_display(ArcContoursCross)</l>
+<l>dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>dev_display(Line1ResultContour)</l>
+<l>dev_display(Line2ResultContour)</l>
+<l>dev_display(Line3ResultContour)</l>
+<l>dev_display(CircleResultContour)</l>
+<l>dev_display(ArcResultContour)</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>****************************</c>
+<c>*计算测量结果</c>
+<c>****************************</c>
+<c>*line1,line2,line3</c>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'row_begin', Line1ResultRowBegin)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'column_begin', Line1ResultColumnBegin)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'row_end', Line1ResultRowEnd)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'column_end', Line1ResultColumnEnd)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'row_begin', Line2ResultRowBegin)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'column_begin', Line2ResultColumnBegin)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'row_end', Line2ResultRowEnd)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'column_end', Line2ResultColumnEnd)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'row_begin', Line3ResultRowBegin)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'column_begin', Line3ResultColumnBegin)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'row_end', Line3ResultRowEnd)</l>
+<l>get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'column_end', Line3ResultColumnEnd)</l>
+<l>Line1Result := [Line1ResultRowBegin,Line1ResultColumnBegin,Line1ResultRowEnd,Line1ResultColumnEnd]</l>
+<l>Line2Result := [Line2ResultRowBegin,Line2ResultColumnBegin,Line2ResultRowEnd,Line2ResultColumnEnd]</l>
+<l>Line3Result := [Line3ResultRowBegin,Line3ResultColumnBegin,Line3ResultRowEnd,Line3ResultColumnEnd]</l>
+<c>*circle</c>
+<l>get_metrology_object_result (MetrologyHandle, CircleIndice, 'all', 'result_type', 'row', CircleResultRow)</l>
+<l>get_metrology_object_result (MetrologyHandle, CircleIndice, 'all', 'result_type', 'column', CircleResultColumn)</l>
+<l>get_metrology_object_result (MetrologyHandle, CircleIndice, 'all', 'result_type', 'radius', CircleResultRadius)</l>
+<l>CircleResult := [CircleResultRow,CircleResultColumn,CircleResultRadius]</l>
+<c>*arc</c>
+<l>get_metrology_object_result (MetrologyHandle, ArcIndice, 'all', 'result_type', 'row', ArcResultRow)</l>
+<l>get_metrology_object_result (MetrologyHandle, ArcIndice, 'all', 'result_type', 'column', ArcResultColumn)</l>
+<l>get_metrology_object_result (MetrologyHandle, ArcIndice, 'all', 'result_type', 'radius', ArcResultRadius)</l>
+<l>ArcResult := [ArcResultRow,ArcResultColumn,ArcResultRadius]</l>
+<c>*line2和line3的交点</c>
+<l>intersection_lines(Line2Result[0], Line2Result[1], Line2Result[2], Line2Result[3], Line3Result[0], Line3Result[1], Line3Result[2], Line3Result[3], IntersectionRow, IntersectionColumn, IsOverlapping)</l>
+<c>*line2和line3的角度和斜率</c>
+<l>angle_ll(IntersectionRow,IntersectionColumn,Line2Result[2],Line2Result[3],IntersectionRow,IntersectionColumn,Line3Result[2],Line3Result[3],AngleOfLine2Line3)</l>
+<l>angle_lx(IntersectionRow,IntersectionColumn,Line2Result[2],Line2Result[3],Line2Phi)</l>
+<l>angle_lx(IntersectionRow,IntersectionColumn,Line3Result[2],Line3Result[3],Line3Phi)</l>
+<l>if(Line3Phi &lt; 0)</l>
+<l>    Line3Phi := Line3Phi + rad(180)</l>
+<l>endif</l>
+<c>*line1和line2的角度</c>
+<l>angle_ll(Line1Result[0],Line1Result[1],Line1Result[2],Line1Result[3],Line2Result[0],Line2Result[1],Line2Result[2],Line2Result[3],AngleOfLine1Line2)</l>
+<l>if(AngleOfLine1Line2 &lt; 0.005)</l>
+<c>    *line1和line2的距离</c>
+<l>    projection_pl(Line1Result[0],Line1Result[1],Line2Result[0],Line2Result[1],Line2Result[2],Line2Result[3],Line1RowBeginProj,Line1ColumnBeginProj)</l>
+<l>    projection_pl(Line1Result[2],Line1Result[3],Line2Result[0],Line2Result[1],Line2Result[2],Line2Result[3],Line1RowEndProj,Line1ColumnEndProj)</l>
+<l>    distance_pp(Line1Result[0],Line1Result[1],Line1RowBeginProj,Line1ColumnBeginProj,TempDistance1)</l>
+<l>    distance_pp(Line1Result[0],Line1Result[1],Line1RowBeginProj,Line1ColumnBeginProj,TempDistance2)</l>
+<l>    DistanceOfLine1Line2  := (TempDistance1 + TempDistance2) / 2</l>
+<l>endif</l>
+<c>*circle的圆心到line1的距离</c>
+<l>projection_pl(CircleResultRow,CircleResultColumn,Line1Result[0],Line1Result[1],Line1Result[2],Line1Result[3],CircleRowProj,CircleColumnProj)</l>
+<l>distance_pp(CircleResultRow,CircleResultColumn,CircleRowProj,CircleColumnProj,DistanceOfCircleLine1)</l>
+<c>****************************</c>
+<c>*显示测量结果</c>
+<c>****************************</c>
+<c>*圆半径</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>dev_display(CircleResultContour)</l>
+<l>disp_message(WindowHandle, '圆半径', 'window', 0, 0, 'black', 'true')</l>
+<l>disp_message (WindowHandle, ['r='] + CircleResultRadius $'.2f', 'image', CircleResultRow, CircleResultColumn - 80, 'black', 'true')</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>*弧半径</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>dev_display(ArcResultContour)</l>
+<l>disp_message(WindowHandle, '弧半径', 'window', 0, 0, 'black', 'true')</l>
+<l>disp_message (WindowHandle, ['r='] + ArcResultRadius $'.2f', 'image', ArcResultRow, ArcResultColumn+30, 'black', 'true')</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>*Line1到Line2的长度</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>dev_display(Line1ResultContour)</l>
+<l>dev_display(Line2ResultContour)</l>
+<l>Line1MiddlePointRow := (Line1ResultRowBegin + Line1ResultRowEnd) / 2</l>
+<l>Line1MiddlePointColumn := (Line1ResultColumnBegin + Line1ResultColumnEnd) / 2</l>
+<l>projection_pl(Line1MiddlePointRow,Line1MiddlePointColumn,Line2ResultRowBegin,Line2ResultColumnBegin,Line2ResultRowEnd,Line2ResultColumnEnd,Line1MiddlePointRowProj,Line1MiddlePointColumnProj)</l>
+<l>dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(MEASURE_CONTOUR_COLOR)</l>
+<l>set_line_style(WindowHandle, [10,10])</l>
+<l>disp_line(WindowHandle, Line1MiddlePointRow, Line1MiddlePointColumn, Line1MiddlePointRowProj, Line1MiddlePointColumnProj)</l>
+<l>disp_message(WindowHandle, 'Line1到Line2的距离', 'window', 0, 0, 'black', 'true')</l>
+<l>disp_message(WindowHandle,['length='] + DistanceOfLine1Line2 $'.2f','image', (Line1MiddlePointRow + Line1MiddlePointRowProj) / 2, (Line1MiddlePointColumn + Line1MiddlePointColumnProj) / 2+10, 'black', 'true')</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>*圆心到Line1的长度</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>set_line_style(WindowHandle, [])</l>
+<l>dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>dev_display(Line1ResultContour)</l>
+<l>dev_display(CircleResultContour)</l>
+<l>projection_pl(CircleResultRow,CircleResultColumn,Line1ResultRowBegin,Line1ResultColumnBegin,Line1ResultRowEnd,Line1ResultColumnEnd,CircleResultRowProj,CircleResultColumnProj)</l>
+<l>dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(MEASURE_CONTOUR_COLOR)</l>
+<l>gen_cross_contour_xld(Cross, CircleResultRow, CircleResultColumn, 18, 0.8)</l>
+<l>dev_display(Cross)</l>
+<l>set_line_style(WindowHandle, [10,10])</l>
+<l>disp_line(WindowHandle,  CircleResultRow, CircleResultColumn, CircleResultRowProj, CircleResultColumnProj)</l>
+<l>disp_message(WindowHandle, '圆心和Line1之间的距离', 'window', 0, 0, 'black', 'true')</l>
+<l>disp_message(WindowHandle,['length='] + DistanceOfCircleLine1 $'.2f','image', (CircleResultRow + CircleResultRowProj) / 2, (CircleResultColumn + CircleResultColumnProj) / 2+10, 'black', 'true')</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>*角度</c>
+<l>dev_clear_window()</l>
+<l>dev_display(TemplateImage)</l>
+<l>set_line_style(WindowHandle, [])</l>
+<l>dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>dev_display(Line2ResultContour)</l>
+<l>dev_display(Line3ResultContour)</l>
+<l>dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>dev_set_color(MEASURE_CONTOUR_COLOR)</l>
+<l>gen_cross_contour_xld(Cross, IntersectionRow, IntersectionColumn, 18, 0.8)</l>
+<c>* 计算角度圆弧半径</c>
+<l>distance_pc(Line2ResultContour,IntersectionRow, IntersectionColumn, DistanceMin1, DistanceMax1)</l>
+<l>distance_pc(Line3ResultContour,IntersectionRow, IntersectionColumn, DistanceMin2, DistanceMax2)</l>
+<l>CornerRadius:=DistanceMin1</l>
+<l>if(CornerRadius &lt; DistanceMin2)</l>
+<l>    CornerRadius := DistanceMin2</l>
+<l>endif</l>
+<l>CornerRadius := CornerRadius + 10</l>
+<c>* 生成角度圆弧</c>
+<l>gen_circle_contour_xld(Corner, IntersectionRow, IntersectionColumn, CornerRadius, Line2Phi, Line3Phi, 'positive', 1)</l>
+<l>Angle := deg(AngleOfLine2Line3)</l>
+<l>Angle := abs(Angle)</l>
+<l>disp_message (WindowHandle, 'Line2和Line3的夹角', 'image',0, 0, 'black', 'true')</l>
+<l>disp_message (WindowHandle, 'angle = ' + (Angle$'.5' + '°'), 'image',IntersectionRow + 20, IntersectionColumn + 20, 'black', 'true')</l>
+<l>disp_continue_message (WindowHandle, 'black', 'true')</l>
+<l>stop()</l>
+<c>****************************</c>
+<c>*开始自动测量</c>
+<c>****************************</c>
+<c>* 模板匹配之前的准备工作</c>
+<l>area_center(ModelImage, AreaModel, RowModel, ColumnModel)</l>
+<l>set_metrology_model_param (MetrologyHandle, 'reference_system', [RowModel,ColumnModel,0])</l>
+<c>* 设置误差</c>
+<l>TemplateCircleRadius := CircleResultRadius</l>
+<l>TemplateArcRadius := ArcResultRadius</l>
+<l>TemplateDistanceOfLine1Line2 := DistanceOfLine1Line2</l>
+<l>TemplateDistanceOfCircleLine1 := DistanceOfCircleLine1</l>
+<l>TemplateAngleOfLine2Line3 := Angle</l>
+<c>* 误差为2像素</c>
+<l>TemplateError := 2</l>
+<l>TemplateAngleError := 0.5</l>
+<c>* 开始检测</c>
+<l>for I := 2 to 5 by 1</l>
+<l>    DetectedResult := 0</l>
+<l>    read_image (CurrentImage, 'metal-parts/circle_plate_' + I$'02d')</l>
+<l>    dev_set_line_width (1)</l>
+<l>    dev_display (CurrentImage)</l>
+<l>    find_scaled_shape_model(CurrentImage, ModelID, 0, rad(360), 0.5, 2, 0.1, 1, 0.7, 'least_squares', 0, 0.9, RowAlign, ColumnAlign, AngleAlign, Scale, Score)</l>
+<l>    if (|Score| &gt; 0)</l>
+<l>        align_metrology_model(MetrologyHandle, RowAlign, ColumnAlign, AngleAlign)</l>
+<l>        apply_metrology_model(CurrentImage, MetrologyHandle)</l>
+<c>        *拟合结果</c>
+<l>        dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>        dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>        get_metrology_object_result_contour(Line1ResultContour, MetrologyHandle, LineIndices[0], 'all', 1.5)</l>
+<l>        get_metrology_object_result_contour(Line2ResultContour, MetrologyHandle, LineIndices[1], 'all', 1.5)</l>
+<l>        get_metrology_object_result_contour(Line3ResultContour, MetrologyHandle, LineIndices[2], 'all', 1.5)</l>
+<l>        get_metrology_object_result_contour(CircleResultContour, MetrologyHandle, CircleIndice, 'all', 1.5)</l>
+<l>        get_metrology_object_result_contour(ArcResultContour, MetrologyHandle, ArcIndice[0], 'all', 1.5)</l>
+<c>        *计算测量结果</c>
+<c>        *line1,line2,line3</c>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'row_begin', Line1ResultRowBegin)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'column_begin', Line1ResultColumnBegin)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'row_end', Line1ResultRowEnd)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[0], 'all', 'result_type', 'column_end', Line1ResultColumnEnd)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'row_begin', Line2ResultRowBegin)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'column_begin', Line2ResultColumnBegin)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'row_end', Line2ResultRowEnd)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[1], 'all', 'result_type', 'column_end', Line2ResultColumnEnd)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'row_begin', Line3ResultRowBegin)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'column_begin', Line3ResultColumnBegin)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'row_end', Line3ResultRowEnd)</l>
+<l>        get_metrology_object_result (MetrologyHandle, LineIndices[2], 'all', 'result_type', 'column_end', Line3ResultColumnEnd)</l>
+<l>        Line1Result := [Line1ResultRowBegin,Line1ResultColumnBegin,Line1ResultRowEnd,Line1ResultColumnEnd]</l>
+<l>        Line2Result := [Line2ResultRowBegin,Line2ResultColumnBegin,Line2ResultRowEnd,Line2ResultColumnEnd]</l>
+<l>        Line3Result := [Line3ResultRowBegin,Line3ResultColumnBegin,Line3ResultRowEnd,Line3ResultColumnEnd]</l>
+<c>        *circle</c>
+<l>        get_metrology_object_result (MetrologyHandle, CircleIndice, 'all', 'result_type', 'row', CircleResultRow)</l>
+<l>        get_metrology_object_result (MetrologyHandle, CircleIndice, 'all', 'result_type', 'column', CircleResultColumn)</l>
+<l>        get_metrology_object_result (MetrologyHandle, CircleIndice, 'all', 'result_type', 'radius', CircleResultRadius)</l>
+<l>        CircleResult := [CircleResultRow,CircleResultColumn,CircleResultRadius]</l>
+<c>        *arc</c>
+<l>        get_metrology_object_result (MetrologyHandle, ArcIndice, 'all', 'result_type', 'row', ArcResultRow)</l>
+<l>        get_metrology_object_result (MetrologyHandle, ArcIndice, 'all', 'result_type', 'column', ArcResultColumn)</l>
+<l>        get_metrology_object_result (MetrologyHandle, ArcIndice, 'all', 'result_type', 'radius', ArcResultleRadius)</l>
+<l>        ArcResult := [ArcResultRow,ArcResultColumn,ArcResultRadius]</l>
+<c>        *line2和line3的交点</c>
+<l>        intersection_lines(Line2Result[0], Line2Result[1], Line2Result[2], Line2Result[3], Line3Result[0], Line3Result[1], Line3Result[2], Line3Result[3], IntersectionRow, IntersectionColumn, IsOverlapping)</l>
+<c>        *line2和line3的角度和斜率</c>
+<l>        angle_ll(IntersectionRow,IntersectionColumn,Line2Result[2],Line2Result[3],IntersectionRow,IntersectionColumn,Line3Result[2],Line3Result[3],AngleOfLine2Line3)</l>
+<l>        angle_lx(IntersectionRow,IntersectionColumn,Line2Result[2],Line2Result[3],Line2Phi)</l>
+<l>        angle_lx(IntersectionRow,IntersectionColumn,Line3Result[2],Line3Result[3],Line3Phi)</l>
+<l>        *if(Line2Phi &gt; 0)</l>
+<l>        *    Line2Phi := Line2Phi - rad(180)</l>
+<l>        *endif</l>
+<c>        *line1和line2的角度</c>
+<l>        angle_ll(Line1Result[0],Line1Result[1],Line1Result[2],Line1Result[3],Line2Result[0],Line2Result[1],Line2Result[2],Line2Result[3],AngleOfLine1Line2)</l>
+<l>        if(AngleOfLine1Line2 &lt; 0.005)</l>
+<c>            *line1和line2的距离</c>
+<l>            projection_pl(Line1Result[0],Line1Result[1],Line2Result[0],Line2Result[1],Line2Result[2],Line2Result[3],Line1RowBeginProj,Line1ColumnBeginProj)</l>
+<l>            projection_pl(Line1Result[2],Line1Result[3],Line2Result[0],Line2Result[1],Line2Result[2],Line2Result[3],Line1RowEndProj,Line1ColumnEndProj)</l>
+<l>            distance_pp(Line1Result[0],Line1Result[1],Line1RowBeginProj,Line1ColumnBeginProj,TempDistance1)</l>
+<l>            distance_pp(Line1Result[0],Line1Result[1],Line1RowBeginProj,Line1ColumnBeginProj,TempDistance2)</l>
+<l>            DistanceOfLine1Line2  := (TempDistance1 + TempDistance2) / 2</l>
+<l>        endif</l>
+<c>        *circle的圆心到line1的距离</c>
+<l>        projection_pl(CircleResultRow,CircleResultColumn,Line1Result[0],Line1Result[1],Line1Result[2],Line1Result[3],CircleRowProj,CircleColumnProj)</l>
+<l>        distance_pp(CircleResultRow,CircleResultColumn,CircleRowProj,CircleColumnProj,DistanceOfCircleLine1)</l>
+<c>        </c>
+<c>        *显示测量结果</c>
+<l>        dev_clear_window()</l>
+<l>        dev_display(CurrentImage)</l>
+<c>        *圆半径</c>
+<l>        if(CircleResultRadius &lt; TemplateCircleRadius + TemplateError and CircleResultRadius &gt; TemplateCircleRadius - TemplateError)</l>
+<l>            dev_set_color(OK_RESULT_CONTOUR_COLOR)</l>
+<l>        else</l>
+<l>            dev_set_color(NG_RESULT_CONTOUR_COLOR)</l>
+<l>            DetectedResult := DetectedResult + 1</l>
+<l>        endif</l>
+<l>        dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>        dev_display(CircleResultContour)</l>
+<l>        disp_message (WindowHandle, ['r='] + CircleResultRadius $'.2f', 'image', CircleResultRow, CircleResultColumn - 80, 'black', 'true')</l>
+<c>        *弧半径</c>
+<l>        if(ArcResultRadius &lt; TemplateArcRadius + TemplateError and ArcResultRadius &gt; TemplateArcRadius - TemplateError)</l>
+<l>            dev_set_color(OK_RESULT_CONTOUR_COLOR)</l>
+<l>        else</l>
+<l>            dev_set_color(NG_RESULT_CONTOUR_COLOR)</l>
+<l>            DetectedResult := DetectedResult + 1</l>
+<l>        endif</l>
+<l>        dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>        dev_display(ArcResultContour)</l>
+<l>        disp_message (WindowHandle, ['r='] + ArcResultRadius $'.2f', 'image', ArcResultRow, ArcResultColumn+30, 'black', 'true')</l>
+<c>        *Line1和Line2的长度</c>
+<l>        dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>        dev_display(Line1ResultContour)</l>
+<l>        dev_display(Line2ResultContour)</l>
+<l>        Line1MiddlePointRow := (Line1ResultRowBegin + Line1ResultRowEnd) / 2</l>
+<l>        Line1MiddlePointColumn := (Line1ResultColumnBegin + Line1ResultColumnEnd) / 2</l>
+<l>        projection_pl(Line1MiddlePointRow,Line1MiddlePointColumn,Line2ResultRowBegin,Line2ResultColumnBegin,Line2ResultRowEnd,Line2ResultColumnEnd,Line1MiddlePointRowProj,Line1MiddlePointColumnProj)</l>
+<l>        if(DistanceOfLine1Line2 &lt; TemplateDistanceOfLine1Line2 + TemplateError and DistanceOfLine1Line2 &gt; TemplateDistanceOfLine1Line2 - TemplateError)</l>
+<l>            dev_set_color(OK_RESULT_CONTOUR_COLOR)</l>
+<l>        else</l>
+<l>            dev_set_color(NG_RESULT_CONTOUR_COLOR)</l>
+<l>            DetectedResult := DetectedResult + 1</l>
+<l>        endif</l>
+<l>        dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>        set_line_style(WindowHandle, [10,10])</l>
+<l>        disp_line(WindowHandle, Line1MiddlePointRow, Line1MiddlePointColumn, Line1MiddlePointRowProj, Line1MiddlePointColumnProj)</l>
+<l>        disp_message(WindowHandle,['length='] + DistanceOfLine1Line2 $'.2f','image', (Line1MiddlePointRow + Line1MiddlePointRowProj) / 2, (Line1MiddlePointColumn + Line1MiddlePointColumnProj) / 2+10, 'black', 'true')</l>
+<c>        *圆心到Line1的长度</c>
+<l>        dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>        dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>        set_line_style(WindowHandle, [])</l>
+<l>        dev_display(Line1ResultContour)</l>
+<l>        *dev_display(CircleResultContour)</l>
+<l>        dev_set_color(MEASURE_CONTOUR_COLOR)</l>
+<l>        dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>        gen_cross_contour_xld(Cross, CircleResultRow, CircleResultColumn, 18, 0.8)</l>
+<l>        projection_pl(CircleResultRow,CircleResultColumn,Line1ResultRowBegin,Line1ResultColumnBegin,Line1ResultRowEnd,Line1ResultColumnEnd,CircleResultRowProj,CircleResultColumnProj)</l>
+<l>        if(DistanceOfCircleLine1 &lt; TemplateDistanceOfCircleLine1 + TemplateError and DistanceOfCircleLine1 &gt; TemplateDistanceOfCircleLine1 - TemplateError)</l>
+<l>            dev_set_color(OK_RESULT_CONTOUR_COLOR)</l>
+<l>        else</l>
+<l>            dev_set_color(NG_RESULT_CONTOUR_COLOR)</l>
+<l>            DetectedResult := DetectedResult + 1</l>
+<l>        endif</l>
+<l>        dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>        set_line_style(WindowHandle, [10,10])</l>
+<l>        disp_line(WindowHandle, CircleResultRow, CircleResultColumn, CircleResultRowProj, CircleResultColumnProj)</l>
+<l>        disp_message(WindowHandle,['length='] + DistanceOfCircleLine1 $'.2f','image', (CircleResultRow + CircleResultRowProj) / 2+30, (CircleResultColumn + CircleResultColumnProj) / 2+10, 'black', 'true')</l>
+<c>        *角度</c>
+<l>        dev_set_color(RESULT_CONTOUR_COLOR)</l>
+<l>        dev_set_line_width(RESULT_CONTOUR_LINEWIDTH)</l>
+<l>        set_line_style(WindowHandle, [])</l>
+<l>        dev_display(Line2ResultContour)</l>
+<l>        dev_display(Line3ResultContour)</l>
+<l>        dev_set_color(MEASURE_CONTOUR_COLOR)</l>
+<l>        dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>        gen_cross_contour_xld(Cross, IntersectionRow, IntersectionColumn, 18, 0.8)</l>
+<l>        distance_pc(Line2ResultContour,IntersectionRow, IntersectionColumn, DistanceMin1, DistanceMax1)</l>
+<l>        distance_pc(Line3ResultContour,IntersectionRow, IntersectionColumn, DistanceMin2, DistanceMax2)</l>
+<l>        CornerRadius:=DistanceMin1</l>
+<l>        if(CornerRadius &lt; DistanceMin2)</l>
+<l>            CornerRadius := DistanceMin2</l>
+<l>        endif</l>
+<l>        CornerRadius := CornerRadius + 10</l>
+<l>        orientation := 'positive'</l>
+<l>        if (Line2Phi &gt; Line3Phi) </l>
+<l>            orientation := 'negative'</l>
+<l>        endif</l>
+<l>        gen_circle_contour_xld(Corner, IntersectionRow, IntersectionColumn, CornerRadius, Line2Phi, Line3Phi, 'positive', 1)</l>
+<l>        Angle := deg(AngleOfLine2Line3)</l>
+<l>        Angle := abs(Angle)</l>
+<l>        if(Angle &lt; TemplateAngleOfLine2Line3 + TemplateAngleError and Angle &gt; TemplateAngleOfLine2Line3 - TemplateAngleError)</l>
+<l>            dev_set_color(OK_RESULT_CONTOUR_COLOR)</l>
+<l>        else</l>
+<l>            dev_set_color(NG_RESULT_CONTOUR_COLOR)</l>
+<l>            DetectedResult := DetectedResult + 1</l>
+<l>        endif</l>
+<l>        dev_set_line_width(MEASURE_CONTOUR_LINEWIDTH)</l>
+<l>        dev_display(Corner)</l>
+<l>        disp_message (WindowHandle, 'angle = ' + (Angle$'.5' + '°'), 'image',IntersectionRow + 20, IntersectionColumn + 20, 'black', 'true')</l>
+<l>    endif</l>
+<l>    if(DetectedResult = 0)</l>
+<l>        disp_message(WindowHandle, '测量结果:OK!', 'window', 0, 0, 'black', 'true')</l>
+<l>    else</l>
+<l>        disp_message(WindowHandle, '测量结果:NG!', 'window', 0, 0, 'black', 'true')</l>
+<l>    endif</l>
+<l>    stop()</l>
+<l>endfor</l>
+<c></c>
+<l>stop()</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+</hdevelop>
