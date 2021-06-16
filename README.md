@@ -4,13 +4,13 @@
 
 ## 效果
 
-- 截图如下：
+截图如下：
 
-  ![形状拟合](./images/fit_shape.jpg)
+![形状拟合](./images/fit_shape.jpg)
 
-  ![形状拟合细节](./images/fit_shape_detail.jpg)
+![形状拟合细节](./images/fit_shape_detail.jpg)
 
-  ![测量结果](./images/auto_measure.png)
+![测量结果](./images/auto_measure.png)
 
 ## 运行环境
 
